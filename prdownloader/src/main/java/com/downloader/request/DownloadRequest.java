@@ -59,6 +59,7 @@ public class DownloadRequest {
     private int downloadId;
     private HashMap<String, List<String>> headerMap;
     private Status status;
+    private String mimeType;
 
     DownloadRequest(DownloadRequestBuilder builder) {
         this.url = builder.url;
@@ -108,6 +109,14 @@ public class DownloadRequest {
 
     public void setDirPath(String dirPath) {
         this.dirPath = dirPath;
+    }
+
+    public String getMimeType() {
+        return mimeType;
+    }
+
+    public void setMimeType(String mimeType) {
+        this.mimeType = mimeType;
     }
 
     public String getFileName() {
@@ -300,7 +309,7 @@ public class DownloadRequest {
             future.cancel(true);
         }
         deliverCancelEvent();
-        Utils.deleteTempFileAndDatabaseEntryInBackground(Utils.getTempPath(dirPath, fileName), downloadId);
+        Utils.deleteTempFileAndDatabaseEntryInBackground(Utils.getPath(dirPath, fileName), downloadId);
     }
 
     private void finish() {

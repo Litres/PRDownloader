@@ -47,9 +47,6 @@ public final class Utils {
         return dirPath + File.separator + fileName;
     }
 
-    public static String getTempPath(String dirPath, String fileName) {
-        return getPath(dirPath, fileName) + ".temp";
-    }
 
     public static void renameFileName(String oldPath, String newPath) throws IOException {
         final File oldFile = new File(oldPath);
@@ -96,7 +93,7 @@ public final class Utils {
                                 .getUnwantedModels(days);
                         if (models != null) {
                             for (DownloadModel model : models) {
-                                final String tempPath = getTempPath(model.getDirPath(), model.getFileName());
+                                final String tempPath = "";//getTempPath(model.getDirPath(), model.getFileName());
                                 ComponentHolder.getInstance().getDbHelper().remove(model.getId());
                                 File file = new File(tempPath);
                                 if (file.exists()) {

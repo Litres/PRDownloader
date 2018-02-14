@@ -43,7 +43,7 @@ import java.net.HttpURLConnection;
 
 public class DownloadTask {
 
-    private static final int BUFFER_SIZE = 1024 * 4;
+    private static final int BUFFER_SIZE = 1024 * 10;
     private static final long TIME_GAP_FOR_SYNC = 2000;
     private static final long MIN_BYTES_FOR_SYNC = 65536;
     private final DownloadRequest request;
@@ -88,7 +88,7 @@ public class DownloadTask {
                 progressHandler = new ProgressHandler(request.getOnProgressListener());
             }
 
-            tempPath = Utils.getTempPath(request.getDirPath(), request.getFileName());
+            tempPath = Utils.getPath(request.getDirPath(), request.getFileName());
 
             File file = new File(tempPath);
 
@@ -122,6 +122,8 @@ public class DownloadTask {
 
             responseCode = httpClient.getResponseCode();
 
+            String mimeType = httpClient.getResponseHeader(Constants.CONTENT_TYPE);
+            request.setMimeType(mimeType);
             eTag = httpClient.getResponseHeader(Constants.ETAG);
 
             if (checkIfFreshStartRequiredAndStart(model)) {
@@ -214,10 +216,6 @@ public class DownloadTask {
 
             } while (true);
 
-            final String path = Utils.getPath(request.getDirPath(), request.getFileName());
-
-            Utils.renameFileName(tempPath, path);
-
             response.setSuccessful(true);
 
             if (isResumeSupported) {
@@ -229,7 +227,11 @@ public class DownloadTask {
                 deleteTempFile();
             }
             Error error = new Error();
-            error.setConnectionError(true);
+            if (e.getMessage().contains("ENOSPC"))
+                error.setType(Error.Type.NO_SPACE);
+            else
+                error.setConnectionError(true);
+
             response.setError(error);
         } finally {
             closeAllSafely(outputStream, fileDescriptor);
