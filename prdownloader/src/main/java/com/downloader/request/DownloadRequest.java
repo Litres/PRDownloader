@@ -39,6 +39,7 @@ import java.util.concurrent.Future;
 
 public class DownloadRequest {
 
+    public static final int UNKNOWN_ID = -1;
     private Priority priority;
     private Object tag;
     private String url;
@@ -56,7 +57,7 @@ public class DownloadRequest {
     private OnStartOrResumeListener onStartOrResumeListener;
     private OnPauseListener onPauseListener;
     private OnCancelListener onCancelListener;
-    private int downloadId;
+    private int downloadId = UNKNOWN_ID;
     private HashMap<String, List<String>> headerMap;
     private Status status;
     private String mimeType;
