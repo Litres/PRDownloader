@@ -28,7 +28,7 @@ import java.util.concurrent.ThreadFactory;
 
 public class DefaultExecutorSupplier implements ExecutorSupplier {
 
-    private static final int DEFAULT_MAX_NUM_THREADS = 1;
+    private static final int DEFAULT_MAX_NUM_THREADS = 3;
     private final DownloadExecutor networkExecutor;
     private final Executor backgroundExecutor;
     private final Executor mainThreadExecutor;
