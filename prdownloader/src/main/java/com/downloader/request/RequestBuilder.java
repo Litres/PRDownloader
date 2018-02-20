@@ -16,6 +16,7 @@
 
 package com.downloader.request;
 
+import com.downloader.EncryptionProvider;
 import com.downloader.Priority;
 
 /**
@@ -36,4 +37,7 @@ public interface RequestBuilder {
 
     RequestBuilder setUserAgent(String userAgent);
 
+    RequestBuilder setEncryptionProvider(EncryptionProvider provider);
+
+    DownloadRequest build();
 }

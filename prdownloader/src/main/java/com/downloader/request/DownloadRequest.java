@@ -16,6 +16,7 @@
 
 package com.downloader.request;
 
+import com.downloader.EncryptionProvider;
 import com.downloader.Error;
 import com.downloader.OnCancelListener;
 import com.downloader.OnDownloadListener;
@@ -52,6 +53,7 @@ public class DownloadRequest {
     private int readTimeout;
     private int connectTimeout;
     private String userAgent;
+    private EncryptionProvider encryptionProvider;
     private OnProgressListener onProgressListener;
     private OnDownloadListener onDownloadListener;
     private OnStartOrResumeListener onStartOrResumeListener;
@@ -69,6 +71,7 @@ public class DownloadRequest {
         this.headerMap = builder.headerMap;
         this.priority = builder.priority;
         this.tag = builder.tag;
+        this.encryptionProvider = builder.encryptionProvider;
         this.readTimeout =
                 builder.readTimeout != 0 ?
                         builder.readTimeout :
@@ -94,6 +97,18 @@ public class DownloadRequest {
 
     public void setTag(Object tag) {
         this.tag = tag;
+    }
+
+    public boolean isEncrypted() {
+        return encryptionProvider != null;
+    }
+
+    public void setEncryptionProvider(EncryptionProvider encryptionProvider) {
+        this.encryptionProvider = encryptionProvider;
+    }
+
+    public EncryptionProvider getEncryptionProvider() {
+        return encryptionProvider;
     }
 
     public String getUrl() {
@@ -211,13 +226,13 @@ public class DownloadRequest {
         return onProgressListener;
     }
 
-    public DownloadRequest setOnStartOrResumeListener(OnStartOrResumeListener onStartOrResumeListener) {
-        this.onStartOrResumeListener = onStartOrResumeListener;
+    public DownloadRequest setOnProgressListener(OnProgressListener onProgressListener) {
+        this.onProgressListener = onProgressListener;
         return this;
     }
 
-    public DownloadRequest setOnProgressListener(OnProgressListener onProgressListener) {
-        this.onProgressListener = onProgressListener;
+    public DownloadRequest setOnStartOrResumeListener(OnStartOrResumeListener onStartOrResumeListener) {
+        this.onStartOrResumeListener = onStartOrResumeListener;
         return this;
     }
 

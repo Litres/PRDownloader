@@ -16,6 +16,7 @@
 
 package com.downloader.request;
 
+import com.downloader.EncryptionProvider;
 import com.downloader.Priority;
 
 import java.util.ArrayList;
@@ -36,6 +37,7 @@ public class DownloadRequestBuilder implements RequestBuilder {
     int readTimeout;
     int connectTimeout;
     String userAgent;
+    EncryptionProvider encryptionProvider;
     HashMap<String, List<String>> headerMap;
 
     public DownloadRequestBuilder(String url, String dirPath, String fileName) {
@@ -90,6 +92,13 @@ public class DownloadRequestBuilder implements RequestBuilder {
         return this;
     }
 
+    @Override
+    public RequestBuilder setEncryptionProvider(EncryptionProvider provider) {
+        this.encryptionProvider = provider;
+        return this;
+    }
+
+    @Override
     public DownloadRequest build() {
         return new DownloadRequest(this);
     }

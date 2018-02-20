@@ -33,6 +33,7 @@ import java.io.FileDescriptor;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.io.SyncFailedException;
 import java.net.HttpURLConnection;
@@ -43,7 +44,7 @@ import java.net.HttpURLConnection;
 
 public class DownloadTask {
 
-    private static final int BUFFER_SIZE = 1024 * 10;
+    private static final int BUFFER_SIZE = 1024 * 8;
     private static final long TIME_GAP_FOR_SYNC = 2000;
     private static final long MIN_BYTES_FOR_SYNC = 65536;
     private final DownloadRequest request;
@@ -78,7 +79,7 @@ public class DownloadTask {
             return response;
         }
 
-        BufferedOutputStream outputStream = null;
+        OutputStream outputStream = null;
 
         FileDescriptor fileDescriptor = null;
 
@@ -175,7 +176,12 @@ public class DownloadTask {
 
             RandomAccessFile randomAccess = new RandomAccessFile(file, "rw");
             fileDescriptor = randomAccess.getFD();
-            outputStream = new BufferedOutputStream(new FileOutputStream(randomAccess.getFD()));
+
+
+            if (request.isEncrypted())
+                outputStream = request.getEncryptionProvider().encrypt(new FileOutputStream(randomAccess.getFD()));
+            else
+                outputStream = new BufferedOutputStream(new FileOutputStream(randomAccess.getFD()));
 
             if (isResumeSupported && request.getDownloadedBytes() != 0) {
                 randomAccess.seek(request.getDownloadedBytes());
@@ -216,6 +222,7 @@ public class DownloadTask {
 
             } while (true);
 
+            request.setTotalBytes(randomAccess.length());
             response.setSuccessful(true);
 
             if (isResumeSupported) {
@@ -312,7 +319,7 @@ public class DownloadTask {
         }
     }
 
-    private void syncIfRequired(BufferedOutputStream outputStream, FileDescriptor fileDescriptor) throws IOException {
+    private void syncIfRequired(OutputStream outputStream, FileDescriptor fileDescriptor) throws IOException {
         final long currentBytes = request.getDownloadedBytes();
         final long currentTime = System.currentTimeMillis();
         final long bytesDelta = currentBytes - lastSyncBytes;
@@ -324,7 +331,7 @@ public class DownloadTask {
         }
     }
 
-    private void sync(BufferedOutputStream outputStream, FileDescriptor fileDescriptor) {
+    private void sync(OutputStream outputStream, FileDescriptor fileDescriptor) {
         boolean success;
         try {
             outputStream.flush();
@@ -343,7 +350,7 @@ public class DownloadTask {
 
     }
 
-    private void closeAllSafely(BufferedOutputStream outputStream, FileDescriptor fileDescriptor) {
+    private void closeAllSafely(OutputStream outputStream, FileDescriptor fileDescriptor) {
         if (httpClient != null) {
             try {
                 httpClient.close();
