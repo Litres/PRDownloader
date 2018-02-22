@@ -53,7 +53,7 @@ PRDownloader.initialize(getApplicationContext(), config);
 
 ### Make a download request
 ```java
-int downloadId = PRDownloader.download(url, dirPath, fileName)
+int downloadId = PRDownloader.download(uri, dirPath, fileName)
                         .build()
                         .setOnStartOrResumeListener(new OnStartOrResumeListener() {
                             @Override
