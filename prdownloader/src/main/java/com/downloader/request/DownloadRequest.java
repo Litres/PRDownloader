@@ -264,7 +264,7 @@ public class DownloadRequest {
             Core.getInstance().getExecutorSupplier().forMainThreadTasks()
                     .execute(new Runnable() {
                         public void run() {
-                            if (attemptCount > MAX_ATTEMPTS || error.getType() == Error.Type.NO_SPACE) {
+                            if (attemptCount >= MAX_ATTEMPTS || error.getType() == Error.Type.NO_SPACE) {
                                 if (onDownloadListener != null) {
                                     onDownloadListener.onError(error);
                                 }
