@@ -16,6 +16,8 @@
 
 package com.downloader.request;
 
+import android.os.Handler;
+
 import com.downloader.EncryptionProvider;
 import com.downloader.Error;
 import com.downloader.OnCancelListener;
@@ -41,6 +43,8 @@ import java.util.concurrent.Future;
 public class DownloadRequest {
 
     public static final int UNKNOWN_ID = -1;
+    public static final double MAX_ATTEMPTS = 3;
+    public static final int ATTEMPT_DELAY_MILLIS = 3000;
     private Priority priority;
     private Object tag;
     private String url;
@@ -63,6 +67,7 @@ public class DownloadRequest {
     private HashMap<String, List<String>> headerMap;
     private Status status;
     private String mimeType;
+    private int attemptCount;
 
     DownloadRequest(DownloadRequestBuilder builder) {
         this.url = builder.url;
@@ -81,6 +86,7 @@ public class DownloadRequest {
                         builder.connectTimeout :
                         getConnectTimeoutFromConfig();
         this.userAgent = builder.userAgent;
+        this.attemptCount = 0;
     }
 
     public Priority getPriority() {
@@ -103,12 +109,12 @@ public class DownloadRequest {
         return encryptionProvider != null;
     }
 
-    public void setEncryptionProvider(EncryptionProvider encryptionProvider) {
-        this.encryptionProvider = encryptionProvider;
-    }
-
     public EncryptionProvider getEncryptionProvider() {
         return encryptionProvider;
+    }
+
+    public void setEncryptionProvider(EncryptionProvider encryptionProvider) {
+        this.encryptionProvider = encryptionProvider;
     }
 
     public String getUrl() {
@@ -258,10 +264,21 @@ public class DownloadRequest {
             Core.getInstance().getExecutorSupplier().forMainThreadTasks()
                     .execute(new Runnable() {
                         public void run() {
-                            if (onDownloadListener != null) {
-                                onDownloadListener.onError(error);
+                            if (attemptCount > MAX_ATTEMPTS || error.getType() == Error.Type.NO_SPACE) {
+                                if (onDownloadListener != null) {
+                                    onDownloadListener.onError(error);
+                                }
+                                finish();
+                            } else {
+                                DownloadRequestQueue.getInstance().finish(DownloadRequest.this);
+                                new Handler().postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        attemptCount++;
+                                        DownloadRequestQueue.getInstance().addRequest(DownloadRequest.this);
+                                    }
+                                }, ATTEMPT_DELAY_MILLIS);
                             }
-                            finish();
                         }
                     });
         }
