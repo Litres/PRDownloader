@@ -109,5 +109,4 @@ public class ComponentHolder {
         }
         return httpClient.clone();
     }
-
 }

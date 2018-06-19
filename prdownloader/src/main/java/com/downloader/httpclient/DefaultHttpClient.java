@@ -34,7 +34,7 @@ import java.util.Set;
  * Created by amitshekhar on 13/11/17.
  */
 
-public class DefaultHttpClient implements HttpClient {
+public class DefaultHttpClient implements HttpClient, Cloneable {
 
     private URLConnection connection;
 
@@ -42,10 +42,13 @@ public class DefaultHttpClient implements HttpClient {
 
     }
 
-    @SuppressWarnings("CloneDoesntCallSuperClone")
     @Override
     public HttpClient clone() {
-        return new DefaultHttpClient();
+        try {
+            return (DefaultHttpClient) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
     }
 
     @Override
