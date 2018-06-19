@@ -25,7 +25,7 @@ import java.io.InputStream;
  * Created by amitshekhar on 13/11/17.
  */
 
-public interface HttpClient extends Cloneable {
+public interface HttpClient {
 
     HttpClient clone();
 
