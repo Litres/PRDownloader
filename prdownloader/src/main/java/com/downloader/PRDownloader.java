@@ -39,6 +39,7 @@ public class PRDownloader {
      * private constructor to prevent instantiation of this class
      */
     private PRDownloader() {
+
     }
 
     /**
