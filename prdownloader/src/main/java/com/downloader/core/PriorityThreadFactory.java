@@ -26,10 +26,10 @@ import java.util.concurrent.ThreadFactory;
 
 public class PriorityThreadFactory implements ThreadFactory {
 
-    private final int mThreadPriority;
+    private final int threadPriority;
 
     PriorityThreadFactory(int threadPriority) {
-        mThreadPriority = threadPriority;
+        this.threadPriority = threadPriority;
     }
 
     @Override
@@ -38,7 +38,7 @@ public class PriorityThreadFactory implements ThreadFactory {
             @Override
             public void run() {
                 try {
-                    Process.setThreadPriority(mThreadPriority);
+                    Process.setThreadPriority(threadPriority);
                 } catch (Throwable ignored) {
 
                 }

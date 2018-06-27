@@ -22,38 +22,38 @@ package com.downloader;
 
 public class Error {
 
-    private Type mType;
+    private Type type;
 
     public Error(Type type) {
-        mType = type;
+        this.type = type;
     }
 
     public Error() {
-        mType = Type.UNKNOWN_ERROR;
+        this.type = Type.UNKNOWN_ERROR;
     }
 
     public boolean isServerError() {
-        return mType == Type.SERVER_ERROR;
+        return this.type == Type.SERVER_ERROR;
     }
 
     public void setServerError(boolean serverError) {
-        mType = Type.SERVER_ERROR;
+        this.type = Type.SERVER_ERROR;
     }
 
     public boolean isConnectionError() {
-        return mType == Type.CONNECTION_ERROR;
+        return this.type == Type.CONNECTION_ERROR;
     }
 
     public void setConnectionError(boolean connectionError) {
-        mType = Type.CONNECTION_ERROR;
+        this.type = Type.CONNECTION_ERROR;
     }
 
     public void setType(Type type) {
-        mType = type;
+        this.type = type;
     }
 
     public Type getType() {
-        return mType;
+        return type;
     }
 
     public enum Type {
