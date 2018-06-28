@@ -40,13 +40,13 @@ public class Core {
         return instance;
     }
 
-    public ExecutorSupplier getExecutorSupplier() {
-        return executorSupplier;
-    }
-
     public static void shutDown() {
         if (instance != null) {
             instance = null;
         }
+    }
+
+    public ExecutorSupplier getExecutorSupplier() {
+        return executorSupplier;
     }
 }

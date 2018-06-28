@@ -39,6 +39,10 @@ public class PRDownloaderConfig {
         this.databaseEnabled = builder.databaseEnabled;
     }
 
+    public static Builder newBuilder() {
+        return new Builder();
+    }
+
     public int getReadTimeout() {
         return readTimeout;
     }
@@ -77,10 +81,6 @@ public class PRDownloaderConfig {
 
     public void setDatabaseEnabled(boolean databaseEnabled) {
         this.databaseEnabled = databaseEnabled;
-    }
-
-    public static Builder newBuilder() {
-        return new Builder();
     }
 
     public static class Builder {
