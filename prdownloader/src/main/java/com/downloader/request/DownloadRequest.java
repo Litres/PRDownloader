@@ -89,6 +89,14 @@ public class DownloadRequest {
         this.attemptCount = 0;
     }
 
+    private int getReadTimeoutFromConfig() {
+        return ComponentHolder.getInstance().getReadTimeout();
+    }
+
+    private int getConnectTimeoutFromConfig() {
+        return ComponentHolder.getInstance().getConnectTimeout();
+    }
+
     public Priority getPriority() {
         return priority;
     }
@@ -284,6 +292,19 @@ public class DownloadRequest {
         }
     }
 
+    private void finish() {
+        destroy();
+        DownloadRequestQueue.getInstance().finish(this);
+    }
+
+    private void destroy() {
+        this.onProgressListener = null;
+        this.onDownloadListener = null;
+        this.onStartOrResumeListener = null;
+        this.onPauseListener = null;
+        this.onCancelListener = null;
+    }
+
     public void deliverSuccess() {
         if (status != Status.CANCELLED) {
             setStatus(Status.COMPLETED);
@@ -325,17 +346,6 @@ public class DownloadRequest {
         }
     }
 
-    private void deliverCancelEvent() {
-        Core.getInstance().getExecutorSupplier().forMainThreadTasks()
-                .execute(new Runnable() {
-                    public void run() {
-                        if (onCancelListener != null) {
-                            onCancelListener.onCancel();
-                        }
-                    }
-                });
-    }
-
     public void cancel() {
         status = Status.CANCELLED;
         if (future != null) {
@@ -345,25 +355,15 @@ public class DownloadRequest {
         Utils.deleteTempFileAndDatabaseEntryInBackground(Utils.getPath(dirPath, fileName), downloadId);
     }
 
-    private void finish() {
-        destroy();
-        DownloadRequestQueue.getInstance().finish(this);
-    }
-
-    private void destroy() {
-        this.onProgressListener = null;
-        this.onDownloadListener = null;
-        this.onStartOrResumeListener = null;
-        this.onPauseListener = null;
-        this.onCancelListener = null;
-    }
-
-    private int getReadTimeoutFromConfig() {
-        return ComponentHolder.getInstance().getReadTimeout();
-    }
-
-    private int getConnectTimeoutFromConfig() {
-        return ComponentHolder.getInstance().getConnectTimeout();
+    private void deliverCancelEvent() {
+        Core.getInstance().getExecutorSupplier().forMainThreadTasks()
+                .execute(new Runnable() {
+                    public void run() {
+                        if (onCancelListener != null) {
+                            onCancelListener.onCancel();
+                        }
+                    }
+                });
     }
 
 }
