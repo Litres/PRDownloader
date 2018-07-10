@@ -249,13 +249,12 @@ public class DownloadTask {
         return response;
     }
 
-    private boolean isSuccessful() {
-        return responseCode >= HttpURLConnection.HTTP_OK
-                && responseCode < HttpURLConnection.HTTP_MULT_CHOICE;
+    private DownloadModel getDownloadModelIfAlreadyPresentInDatabase() {
+        return ComponentHolder.getInstance().getDbHelper().find(request.getDownloadId());
     }
 
-    private void setResumeSupportedOrNot() {
-        isResumeSupported = (responseCode == HttpURLConnection.HTTP_PARTIAL);
+    private void removeNoMoreNeededModelFromDatabase() {
+        ComponentHolder.getInstance().getDbHelper().remove(request.getDownloadId());
     }
 
     private boolean checkIfFreshStartRequiredAndStart(DownloadModel model) throws IOException,
@@ -276,21 +275,21 @@ public class DownloadTask {
         return false;
     }
 
+    private boolean isSuccessful() {
+        return responseCode >= HttpURLConnection.HTTP_OK
+                && responseCode < HttpURLConnection.HTTP_MULT_CHOICE;
+    }
+
+    private void setResumeSupportedOrNot() {
+        isResumeSupported = (responseCode == HttpURLConnection.HTTP_PARTIAL);
+    }
+
     private void deleteTempFile() {
         File file = new File(tempPath);
         if (file.exists()) {
             //noinspection ResultOfMethodCallIgnored
             file.delete();
         }
-    }
-
-    private boolean isETagChanged(DownloadModel model) {
-        return !(eTag == null || model == null || model.getETag() == null)
-                && !model.getETag().equals(eTag);
-    }
-
-    private DownloadModel getDownloadModelIfAlreadyPresentInDatabase() {
-        return ComponentHolder.getInstance().getDbHelper().find(request.getDownloadId());
     }
 
     private void createAndInsertNewModel() {
@@ -304,10 +303,6 @@ public class DownloadTask {
         model.setTotalBytes(totalBytes);
         model.setLastModifiedAt(System.currentTimeMillis());
         ComponentHolder.getInstance().getDbHelper().insert(model);
-    }
-
-    private void removeNoMoreNeededModelFromDatabase() {
-        ComponentHolder.getInstance().getDbHelper().remove(request.getDownloadId());
     }
 
     private void sendProgress() {
@@ -391,6 +386,11 @@ public class DownloadTask {
                 }
             }
         }
+    }
+
+    private boolean isETagChanged(DownloadModel model) {
+        return !(eTag == null || model == null || model.getETag() == null)
+                && !model.getETag().equals(eTag);
     }
 
 }
