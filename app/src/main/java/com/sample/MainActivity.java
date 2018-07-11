@@ -56,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
     final String URL14 = "http://techslides.com/demos/sample-videos/small.mp4";
     final String URL15 = "http://www.sample-videos.com/video/mp4/720/big_buck_bunny_720p_10mb.mp4";
 
+
     Button buttonOne, buttonTwo, buttonThree, buttonFour,
             buttonFive, buttonSix, buttonSeven, buttonEight,
             buttonNine, buttonTen, buttonEleven, buttonTwelve,
