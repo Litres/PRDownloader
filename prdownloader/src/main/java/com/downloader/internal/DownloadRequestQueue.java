@@ -54,10 +54,6 @@ public class DownloadRequestQueue {
         return instance;
     }
 
-    private int getSequenceNumber() {
-        return sequenceGenerator.incrementAndGet();
-    }
-
     public void pause(int downloadId) {
         DownloadRequest request = currentRequestMap.get(downloadId);
         if (request != null) {
@@ -70,10 +66,15 @@ public class DownloadRequestQueue {
         if (request != null) {
             request.setStatus(Status.QUEUED);
             request.setFuture(Core.getInstance()
-                    .getExecutorSupplier()
-                    .forDownloadTasks()
-                    .submit(new DownloadRunnable(request)));
+                                      .getExecutorSupplier()
+                                      .forDownloadTasks()
+                                      .submit(new DownloadRunnable(request)));
         }
+    }
+
+    public void cancel(int downloadId) {
+        DownloadRequest request = currentRequestMap.get(downloadId);
+        cancelAndRemoveFromMap(request);
     }
 
     private void cancelAndRemoveFromMap(DownloadRequest request) {
@@ -81,11 +82,6 @@ public class DownloadRequestQueue {
             request.cancel();
             currentRequestMap.remove(request.getDownloadId());
         }
-    }
-
-    public void cancel(int downloadId) {
-        DownloadRequest request = currentRequestMap.get(downloadId);
-        cancelAndRemoveFromMap(request);
     }
 
     public void cancel(Object tag) {
@@ -123,9 +119,13 @@ public class DownloadRequestQueue {
         request.setStatus(Status.QUEUED);
         request.setSequenceNumber(getSequenceNumber());
         request.setFuture(Core.getInstance()
-                .getExecutorSupplier()
-                .forDownloadTasks()
-                .submit(new DownloadRunnable(request)));
+                                  .getExecutorSupplier()
+                                  .forDownloadTasks()
+                                  .submit(new DownloadRunnable(request)));
+    }
+
+    private int getSequenceNumber() {
+        return sequenceGenerator.incrementAndGet();
     }
 
     public void finish(DownloadRequest request) {

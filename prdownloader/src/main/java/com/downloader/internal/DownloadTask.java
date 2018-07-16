@@ -178,10 +178,11 @@ public class DownloadTask {
             fileDescriptor = randomAccess.getFD();
 
 
-            if (request.isEncrypted())
+            if (request.isEncrypted()) {
                 outputStream = request.getEncryptionProvider().encrypt(new FileOutputStream(randomAccess.getFD()));
-            else
+            } else {
                 outputStream = new BufferedOutputStream(new FileOutputStream(randomAccess.getFD()));
+            }
 
             if (isResumeSupported && request.getDownloadedBytes() != 0) {
                 randomAccess.seek(request.getDownloadedBytes());
@@ -234,10 +235,11 @@ public class DownloadTask {
                 deleteTempFile();
             }
             Error error = new Error();
-            if (e.getMessage().contains("ENOSPC"))
+            if (e.getMessage().contains("ENOSPC")) {
                 error.setType(Error.Type.NO_SPACE);
-            else
+            } else {
                 error.setConnectionError(true);
+            }
 
             response.setError(error);
         } finally {
@@ -247,21 +249,12 @@ public class DownloadTask {
         return response;
     }
 
-    private void deleteTempFile() {
-        File file = new File(tempPath);
-        if (file.exists()) {
-            //noinspection ResultOfMethodCallIgnored
-            file.delete();
-        }
+    private DownloadModel getDownloadModelIfAlreadyPresentInDatabase() {
+        return ComponentHolder.getInstance().getDbHelper().find(request.getDownloadId());
     }
 
-    private boolean isSuccessful() {
-        return responseCode >= HttpURLConnection.HTTP_OK
-                && responseCode < HttpURLConnection.HTTP_MULT_CHOICE;
-    }
-
-    private void setResumeSupportedOrNot() {
-        isResumeSupported = (responseCode == HttpURLConnection.HTTP_PARTIAL);
+    private void removeNoMoreNeededModelFromDatabase() {
+        ComponentHolder.getInstance().getDbHelper().remove(request.getDownloadId());
     }
 
     private boolean checkIfFreshStartRequiredAndStart(DownloadModel model) throws IOException,
@@ -282,13 +275,21 @@ public class DownloadTask {
         return false;
     }
 
-    private boolean isETagChanged(DownloadModel model) {
-        return !(eTag == null || model == null || model.getETag() == null)
-                && !model.getETag().equals(eTag);
+    private boolean isSuccessful() {
+        return responseCode >= HttpURLConnection.HTTP_OK
+                && responseCode < HttpURLConnection.HTTP_MULT_CHOICE;
     }
 
-    private DownloadModel getDownloadModelIfAlreadyPresentInDatabase() {
-        return ComponentHolder.getInstance().getDbHelper().find(request.getDownloadId());
+    private void setResumeSupportedOrNot() {
+        isResumeSupported = (responseCode == HttpURLConnection.HTTP_PARTIAL);
+    }
+
+    private void deleteTempFile() {
+        File file = new File(tempPath);
+        if (file.exists()) {
+            //noinspection ResultOfMethodCallIgnored
+            file.delete();
+        }
     }
 
     private void createAndInsertNewModel() {
@@ -304,17 +305,13 @@ public class DownloadTask {
         ComponentHolder.getInstance().getDbHelper().insert(model);
     }
 
-    private void removeNoMoreNeededModelFromDatabase() {
-        ComponentHolder.getInstance().getDbHelper().remove(request.getDownloadId());
-    }
-
     private void sendProgress() {
         if (request.getStatus() != Status.CANCELLED) {
             if (progressHandler != null) {
                 progressHandler
                         .obtainMessage(Constants.UPDATE,
-                                new Progress(request.getDownloadedBytes(),
-                                        totalBytes)).sendToTarget();
+                                       new Progress(request.getDownloadedBytes(),
+                                                    totalBytes)).sendToTarget();
             }
         }
     }
@@ -344,8 +341,8 @@ public class DownloadTask {
         if (success && isResumeSupported) {
             ComponentHolder.getInstance().getDbHelper()
                     .updateProgress(request.getDownloadId(),
-                            request.getDownloadedBytes(),
-                            System.currentTimeMillis());
+                                    request.getDownloadedBytes(),
+                                    System.currentTimeMillis());
         }
 
     }
@@ -381,13 +378,19 @@ public class DownloadTask {
                 }
             }
         } finally {
-            if (outputStream != null)
+            if (outputStream != null) {
                 try {
                     outputStream.close();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+            }
         }
+    }
+
+    private boolean isETagChanged(DownloadModel model) {
+        return !(eTag == null || model == null || model.getETag() == null)
+                && !model.getETag().equals(eTag);
     }
 
 }

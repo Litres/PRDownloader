@@ -48,12 +48,12 @@ public class Error {
         mType = Type.CONNECTION_ERROR;
     }
 
-    public void setType(Type type) {
-        mType = type;
-    }
-
     public Type getType() {
         return mType;
+    }
+
+    public void setType(Type type) {
+        mType = type;
     }
 
     public enum Type {

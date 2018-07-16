@@ -32,7 +32,7 @@ public class DownloadExecutor extends ThreadPoolExecutor {
 
     DownloadExecutor(int maxNumThreads, ThreadFactory threadFactory) {
         super(maxNumThreads, maxNumThreads, 0, TimeUnit.MILLISECONDS,
-                new PriorityBlockingQueue<Runnable>(), threadFactory);
+              new PriorityBlockingQueue<Runnable>(), threadFactory);
     }
 
     @Override
