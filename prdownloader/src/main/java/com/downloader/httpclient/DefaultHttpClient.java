@@ -57,7 +57,7 @@ public class DefaultHttpClient implements HttpClient, Cloneable {
         connection.setReadTimeout(request.getReadTimeout());
         connection.setConnectTimeout(request.getConnectTimeout());
         final String range = String.format(Locale.ENGLISH,
-                "bytes=%d-", request.getDownloadedBytes());
+                                           "bytes=%d-", request.getDownloadedBytes());
         connection.addRequestProperty(Constants.RANGE, range);
         connection.addRequestProperty(Constants.USER_AGENT, request.getUserAgent());
         addHeaders(request);

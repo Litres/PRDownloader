@@ -44,7 +44,7 @@ public class AppDbHelper implements DbHelper {
         DownloadModel model = null;
         try {
             cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE " +
-                    DownloadModel.ID + " = " + id, null);
+                                         DownloadModel.ID + " = " + id, null);
             if (cursor != null && cursor.moveToFirst()) {
                 model = new DownloadModel();
                 model.setId(id);
@@ -96,7 +96,7 @@ public class AppDbHelper implements DbHelper {
             values.put(DownloadModel.DOWNLOADED_BYTES, model.getDownloadedBytes());
             values.put(DownloadModel.LAST_MODIFIED_AT, model.getLastModifiedAt());
             db.update(TABLE_NAME, values, DownloadModel.ID + " = ? ",
-                    new String[]{String.valueOf(model.getId())});
+                      new String[]{String.valueOf(model.getId())});
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -109,7 +109,7 @@ public class AppDbHelper implements DbHelper {
             values.put(DownloadModel.DOWNLOADED_BYTES, downloadedBytes);
             values.put(DownloadModel.LAST_MODIFIED_AT, lastModifiedAt);
             db.update(TABLE_NAME, values, DownloadModel.ID + " = ? ",
-                    new String[]{String.valueOf(id)});
+                      new String[]{String.valueOf(id)});
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -119,7 +119,7 @@ public class AppDbHelper implements DbHelper {
     public void remove(int id) {
         try {
             db.execSQL("DELETE FROM " + TABLE_NAME + " WHERE " +
-                    DownloadModel.ID + " = " + id);
+                               DownloadModel.ID + " = " + id);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -133,7 +133,7 @@ public class AppDbHelper implements DbHelper {
             final long daysInMillis = days * 24 * 60 * 60 * 1000L;
             final long beforeTimeInMillis = System.currentTimeMillis() - daysInMillis;
             cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE " +
-                    DownloadModel.LAST_MODIFIED_AT + " <= " + beforeTimeInMillis, null);
+                                         DownloadModel.LAST_MODIFIED_AT + " <= " + beforeTimeInMillis, null);
             if (cursor != null && cursor.moveToFirst()) {
                 do {
                     DownloadModel model = new DownloadModel();
