@@ -8,5 +8,5 @@ import java.io.OutputStream;
  */
 
 public interface EncryptionProvider {
-    OutputStream encrypt(OutputStream outputStream) throws IOException;
+    OutputStream encrypt(OutputStream outputStream, boolean resumeEnc) throws IOException;
 }

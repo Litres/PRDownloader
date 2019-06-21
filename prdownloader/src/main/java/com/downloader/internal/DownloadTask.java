@@ -179,13 +179,13 @@ public class DownloadTask {
 
 
             if (request.isEncrypted()) {
-                outputStream = request.getEncryptionProvider().encrypt(new FileOutputStream(randomAccess.getFD()));
+                outputStream = request.getEncryptionProvider().encrypt(new FileOutputStream(randomAccess.getFD()), request.getDownloadedBytes() > 0);
             } else {
                 outputStream = new BufferedOutputStream(new FileOutputStream(randomAccess.getFD()));
             }
 
             if (isResumeSupported && request.getDownloadedBytes() != 0) {
-                randomAccess.seek(request.getDownloadedBytes());
+                randomAccess.seek(file.length());
             }
 
             if (request.getStatus() == Status.CANCELLED) {
