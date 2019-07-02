@@ -44,11 +44,7 @@ public class DefaultHttpClient implements HttpClient, Cloneable {
 
     @Override
     public HttpClient clone() {
-        try {
-            return (DefaultHttpClient) super.clone();
-        } catch (CloneNotSupportedException e) {
-            throw new AssertionError();
-        }
+        return new DefaultHttpClient();
     }
 
     @Override
