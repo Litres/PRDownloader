@@ -82,7 +82,7 @@ public class DownloadTask {
         OutputStream outputStream = null;
 
         FileDescriptor fileDescriptor = null;
-
+        RandomAccessFile randomAccess = null;
         try {
 
             if (request.getOnProgressListener() != null) {
@@ -174,7 +174,7 @@ public class DownloadTask {
                 file.createNewFile();
             }
 
-            RandomAccessFile randomAccess = new RandomAccessFile(file, "rw");
+            randomAccess = new RandomAccessFile(file, "rw");
             fileDescriptor = randomAccess.getFD();
 
 
@@ -190,9 +190,11 @@ public class DownloadTask {
 
             if (request.getStatus() == Status.CANCELLED) {
                 response.setCancelled(true);
+                closeAllSafely(outputStream, fileDescriptor, randomAccess);
                 return response;
             } else if (request.getStatus() == Status.PAUSED) {
                 response.setPaused(true);
+                closeAllSafely(outputStream, fileDescriptor, randomAccess);
                 return response;
             }
 
@@ -214,10 +216,12 @@ public class DownloadTask {
 
                 if (request.getStatus() == Status.CANCELLED) {
                     response.setCancelled(true);
+                    closeAllSafely(outputStream, fileDescriptor, randomAccess);
                     return response;
                 } else if (request.getStatus() == Status.PAUSED) {
                     sync(outputStream, fileDescriptor);
                     response.setPaused(true);
+                    closeAllSafely(outputStream, fileDescriptor, randomAccess);
                     return response;
                 }
 
@@ -243,7 +247,7 @@ public class DownloadTask {
 
             response.setError(error);
         } finally {
-            closeAllSafely(outputStream, fileDescriptor);
+            closeAllSafely(outputStream, fileDescriptor, randomAccess);
         }
 
         return response;
@@ -347,7 +351,7 @@ public class DownloadTask {
 
     }
 
-    private void closeAllSafely(OutputStream outputStream, FileDescriptor fileDescriptor) {
+    private void closeAllSafely(OutputStream outputStream, FileDescriptor fileDescriptor, RandomAccessFile randomAccess) {
         if (httpClient != null) {
             try {
                 httpClient.close();
@@ -374,6 +378,13 @@ public class DownloadTask {
                 try {
                     fileDescriptor.sync();
                 } catch (SyncFailedException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (randomAccess != null) {
+                try {
+                    randomAccess.close();
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
