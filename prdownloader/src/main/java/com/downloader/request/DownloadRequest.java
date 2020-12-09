@@ -43,8 +43,8 @@ import java.util.concurrent.Future;
 public class DownloadRequest {
 
     public static final int UNKNOWN_ID = -1;
-    public static final double MAX_ATTEMPTS = 3;
-    public static final int ATTEMPT_DELAY_MILLIS = 3000;
+    public static final int MAX_ATTEMPTS = 3;
+    public static final int ATTEMPT_DELAY_MILLIS = 1000;
     private Priority priority;
     private Object tag;
     private String url;
